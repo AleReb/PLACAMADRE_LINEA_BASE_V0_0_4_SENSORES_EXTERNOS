@@ -297,6 +297,10 @@ void setup() {
   muxCycleLeds();
   Serial.begin(115200);
   while (!Serial) { delay(10); }  //
+  // Initialize Task Watchdog first to prevent permanent freezes during boot
+  esp_task_wdt_init(WDT_TIMEOUT_S, true);
+  esp_task_wdt_add(NULL);
+
   print_wakeup_reason();
   // Power on sensors
   pinMode(SENSOR_POWER_PIN, OUTPUT);
@@ -309,6 +313,7 @@ void setup() {
 
   // Initialize I²C
   Wire.begin();
+  Wire.setTimeOut(1000); // 1-second timeout to prevent I2C bus hangs
   delay(200);
   muxCycleLeds();
 
@@ -476,9 +481,7 @@ void setup() {
     delay(5000);
     muxOffLed();
   }
-  // LAST Inicializa el Task Watchdog siempre al final porque el modem puede bloquearse y entrar en loop de reinicio
-  esp_task_wdt_init(WDT_TIMEOUT_S, true);
-  esp_task_wdt_add(NULL);
+  // WDT was moved to the very beginning of the setup() routine
 }
 
 void loop() {

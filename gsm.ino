@@ -213,6 +213,7 @@ void testSIM() {
 bool connectToNetwork() {
   String resp;
   for (int i = 0; i < 3; ++i) {
+    esp_task_wdt_reset(); // Feed WDT to prevent resets during long network wait
     Serial.println("Waiting for network...");
     if (!sendAtSync("+CREG?", resp, 5000)) {
       delay(5000);

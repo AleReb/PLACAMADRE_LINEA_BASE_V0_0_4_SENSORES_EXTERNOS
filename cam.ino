@@ -60,6 +60,7 @@ void readHeader() {
 void processReception() {
   // Mientras falten bytes…
   while (bytesReceived < fileSize) {
+    esp_task_wdt_reset(); // Feed Watchdog during slow serial photo reception
     if (fileSerial.available()) {
       size_t remaining = fileSize - bytesReceived;
       size_t toRead = min(remaining, (size_t)CHUNK_SIZE);
